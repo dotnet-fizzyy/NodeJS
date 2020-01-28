@@ -1,4 +1,4 @@
-const { Schema, model, connect } = require('mongoose');
+import { Schema, model, connect } from 'mongoose';
 
 connect('mongodb://localhost:27017/testDB', {
     useNewUrlParser: true,
@@ -22,4 +22,4 @@ const schema = new Schema({
     versionKey: false,
 });
 
-module.exports = model('user', schema);
+export default model('user', schema);

@@ -1,6 +1,6 @@
-const userModel = require('../models/userModel');
+import userModel from '../models/userModel';
 
-async function getAllUsers(req, res) {
+export async function getAllUsers(req, res) {
     try {
         let users = await userModel.find();
         res.send(users);
@@ -9,7 +9,7 @@ async function getAllUsers(req, res) {
     }
 }
 
-async function getUser(req, res) {
+export async function getUser(req, res) {
     try {
         let user = await userModel.findOne({
             name: req.params.name
@@ -23,7 +23,7 @@ async function getUser(req, res) {
     }
 }
 
-async function addUser(req, res) {
+export async function addUser(req, res) {
     try {
         let user = new userModel({
             name: req.body.name,
@@ -37,7 +37,7 @@ async function addUser(req, res) {
     }
 }
 
-async function updateUser(req, res) {
+export async function updateUser(req, res) {
     try {
         await userModel.update({
             name: req.body.name
@@ -53,7 +53,7 @@ async function updateUser(req, res) {
     }
 }
 
-async function deleteUser(req, res) {
+export async function deleteUser(req, res) {
     try {
         let deletedUser = await userModel.deleteOne({
             name: req.params.name
@@ -65,9 +65,3 @@ async function deleteUser(req, res) {
         res.status(500).send(error);
     }
 }
-
-module.exports.getAllUsers = getAllUsers;
-module.exports.getUser = getUser;
-module.exports.addUser = addUser;
-module.exports.updateUser = updateUser;
-module.exports.deleteUser = deleteUser;
