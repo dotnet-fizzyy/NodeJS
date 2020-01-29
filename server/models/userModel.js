@@ -1,9 +1,4 @@
-import { Schema, model, connect } from 'mongoose';
-
-connect('mongodb://localhost:27017/testDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+import { Schema, model } from 'mongoose';
 
 const schema = new Schema({
     name: {
