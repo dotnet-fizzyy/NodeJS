@@ -10,5 +10,5 @@ export async function initDbConnection() {
 }
 
 export async function closeConnection() {
-    return await disconnect();
+    return await disconnect().then(() => console.log('Successfully disconnected!')).catch(error => console.error(error));
 }
