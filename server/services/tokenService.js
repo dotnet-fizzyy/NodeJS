@@ -1,16 +1,15 @@
 import jwt from 'jsonwebtoken';
 
-const passwordKey = process.env.PASSWORD_KEY;
-
 export function signToken(user) {
-    const token = jwt.sign({ ...user }, passwordKey, { expiresIn: '10m' });
+    const token = jwt.sign({ ...user }, process.env.PASSWORD_KEY, { expiresIn: '10m' });
 
     return token;
 }
 
-export function verifyToken(token) {
-    const isTokenCorrect = jwt.decode(token, passwordKey, (err, decoded) => {
-        if (err) return false;
+export function verifyToken(req, res, next) {
+    const token = req.headers['authorization'].split(' ')[1];
+    jwt.verify(token, process.env.PASSWORD_KEY, (err, decoded) => {
+        if (err) return res.sendStatus(401);
+        else next();
     });
-    return true;
 }
