@@ -1,4 +1,5 @@
 import * as userService from '../services/userService';
+import * as userMapper from '../mappers/userMapper';
 
 export async function getAllUsers(req, res) {
     try {
@@ -11,8 +12,11 @@ export async function getAllUsers(req, res) {
 
 export async function getUser(req, res) {
     try {
-        let user = await userService.getUser(req.params.id);
+        if (!req.params.id) {
+            res.status(400);
+        }
 
+        let user = await userService.getUser(req.params.id);
         if (user) {
             res.status(200).send(user);
         }
@@ -27,6 +31,12 @@ export async function getUser(req, res) {
 
 export async function addUser(req, res) {
     try {
+        const mappedUser = userMapper.mapToModel(req);
+        const foundUser = await userService.getUser(mappedUser.id);
+        if (foundUser) {
+            return status(400).send('Already exists');
+        }
+
         await userService.addUser(req);
         res.sendStatus(200);
     } catch (error) {
@@ -52,7 +62,7 @@ export async function deleteUser(req, res) {
         const deletedUser = await userService.deleteUser(req.params.id);
 
         if (deletedUser) {
-            res.sendStatus(204);
+            res.sendStatus(200);
         }
         else {
             res.sendStatus(404);

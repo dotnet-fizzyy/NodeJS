@@ -1,56 +1,13 @@
 <html>
 
 <head>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        var userId = 'user1';
-        var receiverId = 'user2';
-
-        const ws = new WebSocket(`ws://localhost:5001/${userId}`);
-
-        ws.onopen = () => {
-            console.log('open');
-            document.getElementById('user_name').innerHTML = `${userId}: `;
-            ws.send(JSON.stringify({
-                fromUser: userId,
-                toUser: receiverId,
-                message: `${userId} has joined`
-            }));
-        }
-
-        ws.onmessage = message => {
-            receivedMessageFromBack = JSON.parse(message.data);
-            console.warn(receivedMessageFromBack);
-            if ('status' in receivedMessageFromBack) {
-                switch (receivedMessageFromBack.status) {
-                    case 1: document.getElementById('user_status').innerHTML = 'online'; break;
-                    case 2: document.getElementById('user_status').innerHTML = 'offline'; break;
-                }
-            }
-
-            if (receivedMessageFromBack.message) {
-                let newMessage = document.getElementById('chat').appendChild(document.createElement("span"));
-                newMessage.innerHTML = receivedMessageFromBack.message;
-            }
-        };
-
-        ws.onerror = error => {
-            console.error(error);
-        }
-
-        function sendToServer() {
-            let message = document.getElementById('mainInput').value;
-            let data = JSON.stringify({
-                fromUser: userId,
-                toUser: receiverId,
-                message: message
-            });
-            ws.send(data);
-        }
-
-        function closeConnection() {
-            ws.close(1000, userId);
-            console.log('closed');
-        }
+        const socket = io.connect('http://localhost:5000');
+        socket.on('news', (data) => {
+            console.log(data);
+            socket.emit('my other event', { my: 'data' });
+        });
     </script>
 </head>
 

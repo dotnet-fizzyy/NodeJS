@@ -5,14 +5,10 @@ const schema = new Schema({
         type: String,
         required: true,
     },
-    age: {
-        type: Number,
+    password: {
+        type: String,
         required: true,
     },
-    position: {
-        type: String,
-        default: 'student',
-    }
 }, {
     versionKey: false,
 });
