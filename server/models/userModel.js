@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 
 const schema = new Schema({
     name: {
@@ -8,6 +8,12 @@ const schema = new Schema({
     password: {
         type: String,
         required: true,
+    },
+    subscribers: {
+        type: [Types.ObjectId]
+    },
+    subscriptions: {
+        type: [Types.ObjectId]
     },
 }, {
     versionKey: false,

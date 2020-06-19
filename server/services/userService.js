@@ -2,12 +2,58 @@ import userModel from '../models/userModel';
 import * as userMapper from '../mappers/userMapper';
 import mongoose from 'mongoose';
 
+const objectIdParser = (id) => mongoose.Types.ObjectId(id)
+
 export async function getAllUsers() {
     return await userModel.find();
 }
 
+export async function addSubscription(req) {
+    const subscriberId = req.body.subscriberId;
+    const authorId = req.body.author;
+
+    if (subscriberId && authorId) {
+        const exisitingSubscription = await userModel.find({ _id: objectIdParser(authorId), subscribers: [objectIdParser(subscriberId)] });
+        if (exisitingSubscription.length) {
+            return null;
+        }
+
+        const authorAccount = await userModel.findByIdAndUpdate({
+            _id: authorId
+        }, {
+            $push: { subscribers: subscriberId }
+        });
+
+        return authorAccount;
+    }
+
+    return null;
+}
+
+export async function removeSubscription(req) {
+    const subscriberId = req.body.subscriberId;
+    const authorId = req.body.author;
+
+    if (subscriberId && authorId) {
+        const exisitingSubscription = await userModel.find({ _id: objectIdParser(authorId), subscribers: [objectIdParser(subscriberId)] });
+        if (!exisitingSubscription.length) {
+            return null;
+        }
+
+        const authorAccount = await userModel.findByIdAndUpdate({
+            _id: authorId
+        }, {
+            $pull: { subscribers: subscriberId }
+        });
+
+        return authorAccount;
+    }
+
+    return null;
+}
+
 export async function getUser(id) {
-    const user = await userModel.findById(mongoose.Types.ObjectId(id));
+    const user = await userModel.findById(objectIdParser(id));
 
     return user;
 }
@@ -38,7 +84,7 @@ export async function updateUser(req) {
 }
 
 export async function deleteUser(id) {
-    const user = await userModel.findByIdAndRemove(mongoose.Types.ObjectId(id));
+    const user = await userModel.findByIdAndRemove(objectIdParser(id));
 
     return user;
 }

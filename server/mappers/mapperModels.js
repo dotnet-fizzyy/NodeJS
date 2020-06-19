@@ -5,3 +5,14 @@ export class User {
         this.password = '';
     }
 }
+
+export class Post {
+    constructor() {
+        this.id = '';
+        this.userId = '';
+        this.tweet = '';
+        this.creationDate = Date.now();
+        this.likes = [];
+        this.comments = [];
+    }
+}

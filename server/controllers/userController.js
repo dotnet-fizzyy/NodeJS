@@ -71,3 +71,29 @@ export async function deleteUser(req, res) {
         res.status(500).send(error);
     }
 }
+
+export async function addSubscription(req, res) {
+    try {
+        const addedSubscription = await userService.addSubscription(req);
+        if (addedSubscription) {
+            res.sendStatus(201);
+        } else {
+            res.sendStatus(400);
+        }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+
+export async function removeSubscription(req, res) {
+    try {
+        const removedSubscription = await userService.removeSubscription(req);
+        if (removedSubscription) {
+            res.sendStatus(204);
+        } else {
+            res.sendStatus(400);
+        }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
