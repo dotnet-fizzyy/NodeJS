@@ -1,7 +1,7 @@
 import { User } from './mapperModels';
 import crypto from 'crypto';
 
-export function mapToModel(req) {
+export function mapToEntity(req) {
     const user = new User();
     const md5 = crypto.createHash('md5');
 

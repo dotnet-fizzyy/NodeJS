@@ -11,10 +11,11 @@ export async function getAllUsers(req, res) {
 }
 
 export async function getUser(req, res) {
+    if (!req.params.id) {
+        return res.status(400);
+    }
+
     try {
-        if (!req.params.id) {
-            res.status(400);
-        }
 
         let user = await userService.getUser(req.params.id);
         if (user) {
@@ -58,6 +59,10 @@ export async function updateUser(req, res) {
 }
 
 export async function deleteUser(req, res) {
+    if (!req.params.id) {
+        return res.status(400);
+    }
+
     try {
         const deletedUser = await userService.deleteUser(req.params.id);
 

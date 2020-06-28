@@ -9,5 +9,7 @@ postsRouter.get('/user-posts/:id', postsController.getUserSubscriptionPosts);
 postsRouter.post('/post', postsController.addPost);
 postsRouter.put('/post', postsController.updatePost);
 postsRouter.delete('/post/:id', postsController.deletePost);
+postsRouter.put('/post-like', postsController.addLike);
+postsRouter.delete('/post-like', postsController.removeLike);
 
 export default postsRouter;

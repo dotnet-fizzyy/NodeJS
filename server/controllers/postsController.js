@@ -10,19 +10,25 @@ export async function getAllPosts(req, res) {
 }
 
 export async function getUserSubscriptionPosts(req, res) {
-    try {
+    if (!req.params.id) {
+        return res.sendStatus(404);
+    }
 
+    try {
+        const latestPosts = await postsService.getSubscriptionPosts(req.params.id);
+
+        res.send(latestPosts).status(200);
     } catch (error) {
         res.status(500).send(error);
     }
 }
 
 export async function getPost(req, res) {
-    try {
-        if (!req.params.id) {
-            res.status(400);
-        }
+    if (!req.params.id) {
+        return res.sendStatus(400);
+    }
 
+    try {
         let post = await postsService.getPost(req.params.id);
         if (post) {
             res.status(200).send(post);
@@ -37,6 +43,10 @@ export async function getPost(req, res) {
 }
 
 export async function addPost(req, res) {
+    if (!req.body.id) {
+        return res.sendStatus(400);
+    }
+
     try {
         const foundPost = await postsService.getPost(req.body.id);
         if (foundPost) {
@@ -64,6 +74,10 @@ export async function updatePost(req, res) {
 }
 
 export async function deletePost(req, res) {
+    if (!req.params.id) {
+        return res.sendStatus(400);
+    }
+
     try {
         const deletedPost = await postsService.deletePost(req.params.id);
 
@@ -73,6 +87,32 @@ export async function deletePost(req, res) {
         else {
             res.sendStatus(404);
         }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+
+export async function addLike(req, res) {
+    try {
+        const updatedPostWithLike = await postsService.addLike(req);
+
+        if (updatedPostWithLike) {
+            return res.sendStatus(200);
+        }
+
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+
+export async function removeLike(req, res) {
+    try {
+        const removedLike = await postsService.removeLike(req);
+
+        if (removedLike) {
+            return res.sendStatus(200);
+        }
+
     } catch (error) {
         res.status(500).send(error);
     }
