@@ -18,3 +18,17 @@ export function mapToLikeEntity(req) {
 
     return post;
 }
+
+export function mapToModel(doc, user) {
+    const post = new Post();
+
+    post.id = doc._id;
+    post.userId = doc.userId;
+    post.tweet = doc.tweet;
+    post.likes = doc.likes;
+    post.comments = doc.comments;
+    post.creationDate = doc.creationDate;
+    post.username = user.name;
+
+    return post;
+}

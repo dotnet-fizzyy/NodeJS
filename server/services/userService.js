@@ -1,16 +1,20 @@
 import userModel from '../models/userModel';
 import * as userMapper from '../mappers/userMapper';
-import mongoose from 'mongoose';
-
-const objectIdParser = (id) => mongoose.Types.ObjectId(id)
+import { objectIdParser } from '../helpers';
 
 export async function getAllUsers() {
     return await userModel.find();
 }
 
+export async function getUsersByRegex(name) {
+    const users = await userModel.find({ name: { $regex: name } });
+
+    return users;
+}
+
 export async function addSubscription(req) {
     const subscriberId = req.body.subscriberId;
-    const authorId = req.body.author;
+    const authorId = req.body.authorId;
 
     if (subscriberId && authorId) {
         const exisitingSubscription = await userModel.find({ _id: objectIdParser(authorId), subscribers: [objectIdParser(subscriberId)] });
@@ -19,9 +23,15 @@ export async function addSubscription(req) {
         }
 
         const authorAccount = await userModel.findByIdAndUpdate({
-            _id: authorId
+            _id: objectIdParser(authorId)
         }, {
-            $push: { subscribers: subscriberId }
+            $push: { subscribers: objectIdParser(subscriberId) }
+        });
+
+        const userAccount = await userModel.findByIdAndUpdate({
+            _id: objectIdParser(subscriberId)
+        }, {
+            $push: { subscriptions: objectIdParser(authorId) }
         });
 
         return authorAccount;
@@ -31,19 +41,26 @@ export async function addSubscription(req) {
 }
 
 export async function removeSubscription(req) {
-    const subscriberId = req.body.subscriberId;
-    const authorId = req.body.author;
+    const subscriberId = req.query.subscriberId;
+    const authorId = req.query.authorId;
 
     if (subscriberId && authorId) {
-        const exisitingSubscription = await userModel.find({ _id: objectIdParser(authorId), subscribers: [objectIdParser(subscriberId)] });
-        if (!exisitingSubscription.length) {
+        const exisitingSubscription = await userModel.findOne(objectIdParser(authorId), { subscribers: [objectIdParser(subscriberId)] });
+
+        if (!exisitingSubscription) {
             return null;
         }
 
         const authorAccount = await userModel.findByIdAndUpdate({
-            _id: authorId
+            _id: objectIdParser(authorId)
         }, {
-            $pull: { subscribers: subscriberId }
+            $pull: { subscribers: objectIdParser(subscriberId) }
+        });
+
+        const userAccount = await userModel.findByIdAndUpdate({
+            _id: objectIdParser(subscriberId)
+        }, {
+            $pull: { subscriptions: objectIdParser(authorId) }
         });
 
         return authorAccount;
@@ -58,8 +75,15 @@ export async function getUser(id) {
     return user;
 }
 
+export async function authentificateUser(req) {
+    const mappedUser = userMapper.mapToEntity(req);
+    const foundUser = await userModel.findOne({ name: mappedUser.name, password: mappedUser.password });
+
+    return foundUser;
+}
+
 export async function addUser(req) {
-    const mappedUser = userMapper.mapToModel(req);
+    const mappedUser = userMapper.mapToEntity(req);
 
     let user = new userModel({
         name: mappedUser.name,

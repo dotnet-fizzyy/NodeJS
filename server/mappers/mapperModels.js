@@ -14,6 +14,7 @@ export class Post {
         this.creationDate = Date.now();
         this.likes = [];
         this.comments = [];
+        this.username = '';
     }
 }
 

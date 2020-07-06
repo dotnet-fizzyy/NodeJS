@@ -14,7 +14,7 @@ export async function getPostComments(postId) {
     }
 
     let comments = [];
-    for (let commentId in post.comments) {
+    for (let commentId of post.comments) {
         const comment = await commentsModel.findById(objectIdParser(commentId));
         comments = [...comments, comment];
     }
@@ -80,7 +80,7 @@ export async function addLike(req) {
         $push: {
             likes: objectIdParser(mappedEntity.userId)
         }
-    });
+    }, { new: true });
 
     return comment;
 }
@@ -92,7 +92,7 @@ export async function removeLike(req) {
         $pull: {
             likes: objectIdParser(mappedEntity.userId)
         }
-    });
+    }, { new: true });
 
     return comment;
 }

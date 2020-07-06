@@ -2,30 +2,34 @@ import postsModel from '../models/postsModel';
 import * as usersService from '../services/userService';
 import * as postsMapper from '../mappers/postsMapper';
 import { objectIdParser } from '../helpers';
+import userModel from '../models/userModel';
 
 export async function getAllPosts() {
     return await postsModel.find();
 }
 
 export async function getUserPosts(id) {
-    const posts = await postsModel.findById(objectIdParser(id));
+    const posts = await postsModel.find({ userId: objectIdParser(id) });
 
     return posts;
 }
 
 export async function getSubscriptionPosts(id) {
-    const user = await usersService.getUser({ userId: objectIdParser(id) })
+    const user = await usersService.getUser(objectIdParser(id));
     if (!user) {
         return null;
     }
 
-    const latestPosts = [];
-    for (const subscriptionId in user.subscriptions) {
-        const subscriptionPosts = await postsService.find({ userId: objectIdParser(subscriptionId) });
-        latestPosts = [...latestPosts, subscriptionPosts];
+    let latestPosts = [];
+    for (let subscriptionId of user.subscriptions) {
+        const subscriptionPosts = await postsModel.find({ userId: objectIdParser(subscriptionId) });
+        const user = await userModel.findById(objectIdParser(subscriptionId));
+
+        subscriptionPosts = subscriptionPosts.map(post => postsMapper.mapToModel(post, user));
+        latestPosts = [...latestPosts, ...subscriptionPosts];
     }
 
-    latestPosts = Array.from(latestPosts).sort((a, b) => {
+    latestPosts = latestPosts.sort((a, b) => {
         if (a.creationDate > b.creationDate) {
             return 1;
         }
@@ -35,11 +39,11 @@ export async function getSubscriptionPosts(id) {
         }
     });
 
-    return userPosts;
+    return latestPosts;
 }
 
 export async function addPost(req) {
-    const mappedPost = postsMapper.mapToModel(req);
+    const mappedPost = postsMapper.mapToEntity(req);
 
     let post = new postsModel({
         userId: mappedPost.userId,
@@ -50,10 +54,12 @@ export async function addPost(req) {
     });
 
     await post.save();
+
+    return await getUserPosts(mappedPost.userId);
 }
 
 export async function updatePost(req) {
-    const mappedPost = postsMapper.mapToModel(req);
+    const mappedPost = postsMapper.mapToEntity(req);
 
     const user = await postsModel.findByIdAndUpdate({
         _id: mappedPost.id
@@ -79,7 +85,7 @@ export async function addLike(req) {
         $push: {
             likes: objectIdParser(mappedEntity.userId)
         }
-    });
+    }, { new: true });
 
     return post;
 }
@@ -91,7 +97,7 @@ export async function removeLike(req) {
         $pull: {
             likes: objectIdParser(mappedEntity.userId)
         }
-    });
+    }, { new: true });
 
     return post;
 }

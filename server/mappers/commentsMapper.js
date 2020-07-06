@@ -5,6 +5,7 @@ export function mapToEntity(req) {
 
     commentEntity.id = req.body.id;
     commentEntity.postId = req.body.postId;
+    commentEntity.userId = req.body.userId;
     commentEntity.comment = req.body.comment;
     commentEntity.likes = req.body.likes;
 
