@@ -1,5 +1,4 @@
 import * as commentsService from '../services/commentsService';
-import commentsModel from '../models/commentsModel';
 
 export async function getAllUserComments(req, res, next) {
     if (!req.params.id) {

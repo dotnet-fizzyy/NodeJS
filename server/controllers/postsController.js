@@ -14,13 +14,9 @@ export async function getUserSubscriptionPosts(req, res, next) {
         return res.sendStatus(404);
     }
 
-    try {
-        const latestPosts = await postsService.getSubscriptionPosts(req.params.id).catch(next);
+    const latestPosts = await postsService.getSubscriptionPosts(req.params.id).catch(next);
 
-        res.send(latestPosts).status(200);
-    } catch (error) {
-        res.status(500).send(error);
-    }
+    return res.send(latestPosts).status(200);
 }
 
 export async function getPost(req, res, next) {
@@ -28,40 +24,28 @@ export async function getPost(req, res, next) {
         return res.sendStatus(400);
     }
 
-    try {
-        let post = await postsService.getUserPosts(req.params.id).catch(next);
-        if (post) {
-            res.status(200).send(post);
-        }
-        else {
-            res.sendStatus(404);
-        }
-
-    } catch (error) {
-        res.status(500).send(error);
+    let post = await postsService.getUserPosts(req.params.id).catch(next);
+    if (post) {
+        return res.status(200).send(post);
     }
+
+    return res.sendStatus(404);
 }
 
 export async function addPost(req, res, next) {
-    try {
-        const userPosts = await postsService.addPost(req).catch(next);
-        res.send(userPosts).status(201);
-    } catch (error) {
-        res.status(500).send(error);
-    }
+    const userPosts = await postsService.addPost(req).catch(next);
+
+    return res.send(userPosts).status(201);
 }
 
 export async function updatePost(req, res, next) {
-    try {
-        const foundPost = await postsService.updatePost(req).catch(next);
-        if (foundPost) {
-            res.status(200).send(foundPost);
-        } else {
-            res.sendStatus(404);
-        }
-    } catch (error) {
-        res.status(500).send(error);
+    const foundPost = await postsService.updatePost(req).catch(next);
+
+    if (foundPost) {
+        res.status(200).send(foundPost);
     }
+
+    return res.sendStatus(404);
 }
 
 export async function deletePost(req, res, next) {
@@ -71,7 +55,7 @@ export async function deletePost(req, res, next) {
     const deletedPost = await postsService.deletePost(req.params.id).catch(next);
 
     if (deletedPost) {
-        return res.sendStatus(200);
+        return res.status(200).send(deletedPost);
     }
 
     return res.sendStatus(404);

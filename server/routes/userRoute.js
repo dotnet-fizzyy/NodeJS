@@ -12,5 +12,6 @@ userRouter.put('/user', userController.updateUser);
 userRouter.delete('/user/:id', userController.deleteUser);
 userRouter.post('/subscribe', userController.addSubscription);
 userRouter.delete('/unsubscribe', userController.removeSubscription);
+userRouter.post('/subs', userController.getSubscribers);
 
 export default userRouter;

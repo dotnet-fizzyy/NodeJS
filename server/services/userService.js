@@ -26,7 +26,7 @@ export async function addSubscription(req) {
             _id: objectIdParser(authorId)
         }, {
             $push: { subscribers: objectIdParser(subscriberId) }
-        });
+        }, { new: true });
 
         const userAccount = await userModel.findByIdAndUpdate({
             _id: objectIdParser(subscriberId)
@@ -55,7 +55,7 @@ export async function removeSubscription(req) {
             _id: objectIdParser(authorId)
         }, {
             $pull: { subscribers: objectIdParser(subscriberId) }
-        });
+        }, { new: true });
 
         const userAccount = await userModel.findByIdAndUpdate({
             _id: objectIdParser(subscriberId)

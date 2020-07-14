@@ -26,13 +26,27 @@ export async function getUser(req, res, next) {
     }
 }
 
+export async function getSubscribers(req, res, next) {
+    const subscriberIds = await userService.getAllUsers();
+    let subs = [];
+
+    for (let subscriber of subscriberIds) {
+
+        if (subscriber) {
+            subs = [...subs, { id: subscriber._id, name: subscriber.name }];
+        }
+    }
+
+    return res.status(200).send(subs);
+}
+
 export async function authentificateUser(req, res, next) {
     const user = await userService.authentificateUser(req).catch(next);
     if (user) {
         return res.status(200).send(user);
     }
 
-    return res.sendStatus(404);
+    return res.sendStatus(400);
 }
 
 export async function addUser(req, res, next) {
@@ -67,7 +81,7 @@ export async function deleteUser(req, res, next) {
 export async function addSubscription(req, res, next) {
     const addedSubscription = await userService.addSubscription(req).catch(next);
     if (addedSubscription) {
-        res.sendStatus(201);
+        res.status(201).send(addedSubscription);
     } else {
         res.sendStatus(400);
     }
@@ -76,7 +90,7 @@ export async function addSubscription(req, res, next) {
 export async function removeSubscription(req, res, next) {
     const removedSubscription = await userService.removeSubscription(req).catch(next);
     if (removedSubscription) {
-        res.sendStatus(204);
+        res.status(200).send(removedSubscription);
     } else {
         res.sendStatus(400);
     }

@@ -28,3 +28,14 @@ export class Comment {
         this.likes = [];
     }
 }
+
+export class Message {
+    constructor() {
+        this.id = '';
+        this.authorId = '';
+        this.recepientId = '';
+        this.message = '',
+            this.sessionId = '',
+            this.creationDate = Date.now();
+    }
+}
