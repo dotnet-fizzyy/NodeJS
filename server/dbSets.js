@@ -3,7 +3,11 @@ import { config } from 'dotenv';
 config();
 
 export async function initDbConnection() {
-    return await connect(process.env.MONGODB_CONNECTION, {
+    const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOSTNAME, MONGO_PORT, MONGO_DB } = process.env;
+
+    const mongoConnection = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`;
+
+    return await connect(mongoConnection, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     }).then(() => console.log('Connection has been set successful!')).catch(error => console.error(error));
